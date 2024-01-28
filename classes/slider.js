@@ -11,8 +11,8 @@ class Slider {
     min,
     max,
     fontSize,
-    submitCallback,
-    changeCallback
+    changeCallback,
+    submitCallback
   ) {
     this.x = x;
     this.y = y;
