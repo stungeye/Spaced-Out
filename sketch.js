@@ -1,8 +1,8 @@
 let gui;
-let slider;
 let value = 0;
 let isMobile;
 let currentOrientation;
+let numPad;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -10,31 +10,31 @@ function setup() {
   currentOrientation = deviceOrientation;
 
   gui = createGui();
-  slider = new Slider(
+  numPad = new NumPad(
     0,
-    height - 160,
-    width,
-    40,
-    width * 0.03,
-    0,
-    9,
-    32,
-    (value) => {
-      console.log(`Submit: ${value}`);
+    windowHeight / 2,
+    windowWidth,
+    windowHeight / 2,
+    (valueHash) => {
+      if (valueHash.hasValue) {
+        value = valueHash.value;
+      } else {
+        value = "?";
+      }
     },
-    (v) => {
-      value = v;
+    (value) => {
+      console.log(value);
     }
   );
 }
 
-
 function draw() {
   background(250);
-  slider.draw();
   textSize(100);
   textAlign(CENTER, CENTER);
-  text(value, width / 2, height / 2);
+  text(value, width / 2, height / 4);
+
+  numPad.draw();
 
   if (isMobile && currentOrientation !== deviceOrientation) {
     currentOrientation = deviceOrientation;
@@ -42,13 +42,12 @@ function draw() {
   }
 }
 
+// Prevent touch issues with mobile.
 function touchMoved() {
-  // do some stuff
   return false;
 }
 
 function windowResized() {
-
   resizeCanvas(windowWidth, windowHeight);
-  slider.updateDimension(0,  windowHeight - 160, windowWidth, 40, windowWidth * 0.03);
+  // slider.updateDimension(0,  windowHeight - 160, windowWidth, 40, windowWidth * 0.03);
 }
