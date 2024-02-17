@@ -1,9 +1,12 @@
 let gui;
-let value = 0;
+let value = "?";
 let isMobile;
 let currentOrientation;
 let numPad;
 let preloadedSounds;
+let flashCardDeck;
+let sessionDeck;
+const localStoreKey = "spaced-out-deck";
 
 function preload() {
   // Loop through the Sfx enum and preload the sounds.
@@ -18,6 +21,17 @@ function setup() {
   isMobile = deviceOrientation !== undefined;
   currentOrientation = deviceOrientation;
 
+  const storedDeck =
+    localStorage.getItem(localStoreKey) ?? generateMultiplicationDeck(4);
+
+  console.log(storedDeck);
+
+  flashCardDeck = new FlashCardDeck(storedDeck, (json) => {
+    localStorage.setItem(localStoreKey, json);
+  });
+
+  console.log(flashCardDeck);
+
   gui = createGui();
   numPad = new NumPad(
     0,
@@ -31,17 +45,29 @@ function setup() {
         value = "?";
       }
     },
-    (value) => {
-      console.log(value);
+    (valueHash) => {
+      if (valueHash.hasValue) {
+        flashCardDeck.updateCard(sessionDeck[0].question, valueHash.value);
+      }
     }
   );
 }
 
 function draw() {
+  sessionDeck = flashCardDeck.getSessionCards();
+
   background(250);
-  textSize(100);
+
+  flashCardDeck.drawDebugInfo(0, 30, width, height);
   textAlign(CENTER, CENTER);
-  text(value, width / 2, height / 4);
+  textSize(50);
+  if (sessionDeck.length === 0) {
+    text("No cards left!", width / 2, height / 8);
+  } else {
+    text(sessionDeck[0].question, width / 2, height / 8);
+  }
+  textSize(100);
+  text(value, width / 2, height / 3);
 
   numPad.draw();
 

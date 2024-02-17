@@ -69,7 +69,7 @@ class NumPad {
 
     // Add styles and callbacks to the button.
     for (const button of buttons) {
-      // Is this a numberic button?
+      // Is this a numeric button?
       if (!isNaN(parseInt(button.label))) {
         button.setStyle({
           textSize: buttonFontSize,
@@ -87,6 +87,10 @@ class NumPad {
         if (button.label === "✅" && this.submitCallback) {
           button.onPress = () => {
             this.submitCallback(this.numbericValue());
+            this.value = "";
+            if (this.changeCallback) {
+              this.changeCallback(this.numbericValue());
+            }
           };
         } else if (button.label === "❎") {
           button.onPress = () => {
