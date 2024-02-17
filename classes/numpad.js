@@ -12,13 +12,20 @@ class NumPad {
     this.buttons = this.createButtons(3, 4);
   }
 
+  updateDimensions(x, y, w, h) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.buttons = this.createButtons(3, 4);
+  }
+
   draw() {
     // Draw the keypad background
     push();
     fill(255);
     stroke(0);
     rect(this.x, this.y, this.w, this.h);
-    textSize(this.buttonFontSize);
 
     // Draw the buttons
     this.buttons.forEach((button) => {

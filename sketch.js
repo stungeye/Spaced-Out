@@ -3,6 +3,15 @@ let value = 0;
 let isMobile;
 let currentOrientation;
 let numPad;
+let preloadedSounds;
+
+function preload() {
+  // Loop through the Sfx enum and preload the sounds.
+  preloadedSounds = Object.keys(Sfx).reduce((acc, key) => {
+    const sound = loadSound(Config[Sfx[key]]);
+    return { ...acc, [Sfx[key]]: sound };
+  }, {});
+}
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -49,5 +58,6 @@ function touchMoved() {
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+  numPad.updateDimensions(0, windowHeight / 2, windowWidth, windowHeight / 2);
   // slider.updateDimension(0,  windowHeight - 160, windowWidth, 40, windowWidth * 0.03);
 }
