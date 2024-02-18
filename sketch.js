@@ -26,7 +26,7 @@ function setup() {
   soundManager = new SoundManager(preloadedSounds);
 
   const storedDeck =
-    localStorage.getItem(localStoreKey) ?? generateMultiplicationDeck(4);
+    localStorage.getItem(localStoreKey) ?? generateMultiplicationDeck(8);
 
   flashCardDeck = new FlashCardDeck(storedDeck, soundManager, (json) => {
     localStorage.setItem(localStoreKey, json);
