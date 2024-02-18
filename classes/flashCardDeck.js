@@ -1,8 +1,9 @@
 class FlashCardDeck {
-  constructor(cards = [], jsonOnChangeCallback = (json) => {}) {
+  constructor(cards = [], soundManager, jsonOnChangeCallback = (json) => {}) {
     // Default values for a new deck
     this.sessionNumber = 1;
     this.cards = [];
+    this.soundManager = soundManager;
     this.jsonOnChangeCallback = jsonOnChangeCallback;
 
     if (typeof cards === "string") {
@@ -56,9 +57,11 @@ class FlashCardDeck {
     if (card) {
       card.lastReviewedSession = this.sessionNumber;
       if (userAnswer === card.answer) {
+        this.soundManager.play(Sfx.Correct);
         // Correct answer, move to the next box
         card.boxNumber++;
       } else {
+        this.soundManager.play(Sfx.Incorrect);
         // Incorrect answer, reset to box #0
         card.boxNumber = 0;
       }

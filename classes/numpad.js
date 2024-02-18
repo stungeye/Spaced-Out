@@ -1,11 +1,12 @@
 // Uses p5.touchgui library to create an on screen numeric keypad with a clear and submit button.
 // Callback can be attached to the submit button and any value change. Callbacks are provided with the current value.
 class NumPad {
-  constructor(x, y, w, h, changeCallback, submitCallback) {
+  constructor(x, y, w, h, soundManager, changeCallback, submitCallback) {
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
+    this.soundManager = soundManager;
     this.submitCallback = submitCallback;
     this.changeCallback = changeCallback;
     this.value = "";
@@ -76,6 +77,10 @@ class NumPad {
         });
 
         button.onPress = () => {
+          let number = parseInt(button.label);
+          if (number === 0) number = 10;
+          let playRate = map(number, 1, 10, 0.6, 1);
+          this.soundManager.play(Sfx.Click, playRate);
           this.buttonCallback(button.label);
         };
       } else {
@@ -86,17 +91,20 @@ class NumPad {
 
         if (button.label === "✅" && this.submitCallback) {
           button.onPress = () => {
-            this.submitCallback(this.numbericValue());
+            this.submitCallback(this.numericValue());
             this.value = "";
             if (this.changeCallback) {
-              this.changeCallback(this.numbericValue());
+              this.changeCallback(this.numericValue());
             }
           };
         } else if (button.label === "❎") {
           button.onPress = () => {
-            this.value = "";
+            if (this.value !== "") {
+              this.value = "";
+              this.soundManager.play(Sfx.Delete);
+            }
             if (this.changeCallback) {
-              this.changeCallback(this.numbericValue());
+              this.changeCallback(this.numericValue());
             }
           };
         }
@@ -111,12 +119,12 @@ class NumPad {
     this.value += value;
 
     if (this.changeCallback) {
-      this.changeCallback(this.numbericValue());
+      this.changeCallback(this.numericValue());
     }
   }
 
   // Returns the current value in a maybe-hash format.
-  numbericValue() {
+  numericValue() {
     let value = parseInt(this.value);
 
     if (!isNaN(value)) {

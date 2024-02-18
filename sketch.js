@@ -6,12 +6,14 @@ let numPad;
 let preloadedSounds;
 let flashCardDeck;
 let sessionDeck;
+let soundManager;
 const localStoreKey = "spaced-out-deck";
 
 function preload() {
-  // Loop through the Sfx enum and preload the sounds.
+  // Loop through the Sfx enum and preload the sounds into an object.
   preloadedSounds = Object.keys(Sfx).reduce((acc, key) => {
     const sound = loadSound(Config[Sfx[key]]);
+    sound.setVolume(0.5); // Prevent clipping on mobile? Maybe?
     return { ...acc, [Sfx[key]]: sound };
   }, {});
 }
@@ -21,16 +23,14 @@ function setup() {
   isMobile = deviceOrientation !== undefined;
   currentOrientation = deviceOrientation;
 
+  soundManager = new SoundManager(preloadedSounds);
+
   const storedDeck =
     localStorage.getItem(localStoreKey) ?? generateMultiplicationDeck(4);
 
-  console.log(storedDeck);
-
-  flashCardDeck = new FlashCardDeck(storedDeck, (json) => {
+  flashCardDeck = new FlashCardDeck(storedDeck, soundManager, (json) => {
     localStorage.setItem(localStoreKey, json);
   });
-
-  console.log(flashCardDeck);
 
   gui = createGui();
   numPad = new NumPad(
@@ -38,6 +38,7 @@ function setup() {
     windowHeight / 2,
     windowWidth,
     windowHeight / 2,
+    soundManager,
     (valueHash) => {
       if (valueHash.hasValue) {
         value = valueHash.value;
@@ -84,6 +85,8 @@ function touchMoved() {
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-  numPad.updateDimensions(0, windowHeight / 2, windowWidth, windowHeight / 2);
+  if (numPad) {
+    numPad.updateDimensions(0, windowHeight / 2, windowWidth, windowHeight / 2);
+  }
   // slider.updateDimension(0,  windowHeight - 160, windowWidth, 40, windowWidth * 0.03);
 }
