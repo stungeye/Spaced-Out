@@ -12,8 +12,9 @@ const localStoreKey = "spaced-out-deck";
 function preload() {
   // Loop through the Sfx enum and preload the sounds into an object.
   preloadedSounds = Object.keys(Sfx).reduce((acc, key) => {
-    const sound = loadSound(Config[Sfx[key]]);
-    sound.setVolume(0.5); // Prevent clipping on mobile? Maybe?
+    //const sound = loadSound(Config[Sfx[key]]);
+    const sound = new Howl({ src: [Config[Sfx[key]]] });
+    // sound.setVolume(0.5); // Prevent clipping on mobile? Maybe?
     return { ...acc, [Sfx[key]]: sound };
   }, {});
 }
